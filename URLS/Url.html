@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Powered URL Safety Guardian</title>
+  <link rel="icon" type="image/svg+xml" href="assets/shield.svg">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000000' d='M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z'/%3E%3C/svg%3E">
+    <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #2d3748;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      background: linear-gradient(to right, #4834d4, #686de0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #4834d4;
+      margin: 30px 0 20px;
+      font-size: 1.8em;
+    }
+
+    input[type="text"] {
+      width: calc(100% - 40px);
+      padding: 18px;
+      margin-bottom: 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #4834d4;
+      box-shadow: 0 0 0 3px rgba(72, 52, 212, 0.2);
+    }
+
+    button {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #4834d4 0%, #686de0 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 6px rgba(72, 52, 212, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(72, 52, 212, 0.25);
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 30px;
+      background: linear-gradient(135deg, #f6f7ff 0%, #f0f3ff 100%);
+      border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .result h3 {
+      font-size: 1.5em;
+      margin: 20px 0;
+      color: #4834d4;
+      border-bottom: 2px solid rgba(72, 52, 212, 0.1);
+      padding-bottom: 15px;
+    }
+
+    .result p {
+      margin: 20px 0;
+      font-size: 1.1em;
+      line-height: 1.6;
+      padding: 10px 0;
+    }
+
+    .result-item {
+      background: rgba(255, 255, 255, 0.5);
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin: 15px 0;
+      transition: transform 0.3s ease;
+    }
+
+    .result-item:hover {
+      transform: translateX(5px);
+    }
+
+    .result-label {
+      font-weight: 600;
+      color: #4834d4;
+      margin-right: 10px;
+    }
+
+    .ai-badge {
+      background: linear-gradient(135deg, #4834d4 0%, #686de0 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      display: inline-block;
+      box-shadow: 0 4px 6px rgba(72, 52, 212, 0.2);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin: 10px 0;
+    }
+
+    .safe { 
+      color: #2ecc71;
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.2);
+    }
+
+    .danger { 
+      color: #e74c3c;
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+
+    .result button {
+      margin-top: 20px;
+    }
+
+
+    .table-container {
+      margin-top: 20px;
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    #historyTable {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    #historyTable th {
+      background: linear-gradient(135deg, #4834d4 0%, #686de0 100%);
+      color: white;
+      padding: 15px;
+      text-align: left;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+
+    #historyTable th:first-child {
+      border-top-left-radius: 16px;
+    }
+
+    #historyTable th:last-child {
+      border-top-right-radius: 16px;
+    }
+
+    /* Set specific widths for each column */
+    #historyTable th:nth-child(1),
+    #historyTable td:nth-child(1) {
+      width: 40%;
+      max-width: 0;
+    }
+
+    #historyTable th:nth-child(2),
+    #historyTable td:nth-child(2) {
+      width: 15%;
+    }
+
+    #historyTable th:nth-child(3),
+    #historyTable td:nth-child(3) {
+      width: 15%;
+    }
+
+    #historyTable th:nth-child(4),
+    #historyTable td:nth-child(4) {
+      width: 30%;
+    }
+
+    #historyTable td {
+      padding: 15px;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 30px 0 20px;
+    }
+
+    .history-header h2 {
+      margin: 0;
+    }
+
+    .clear-history-btn {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+
+    .clear-history-btn:hover {
+      background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    }
+
+    .delete-entry {
+      background: none;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      margin-left: 10px;
+    }
+
+    .delete-entry:hover {
+      background: rgba(231, 76, 60, 0.1);
+      transform: rotate(90deg);
+    }
+
+    .action-cell {
+      width: 50px !important;
+      text-align: center;
+    }
+
+    /* Confirmation Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal h3 {
+      color: #4834d4;
+      margin-bottom: 20px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .modal-buttons button {
+      min-width: 100px;
+    }
+
+    .cancel-btn {
+      background: linear-gradient(135deg, #718093 0%, #2c3e50 100%);
+    }
+
+    .confirm-btn {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+
+    /* URL cell specific styling */
+    .url-cell {
+      position: relative;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Hover tooltip for long URLs */
+    .url-cell:hover::after {
+      content: attr(data-url);
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background: #4834d4;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 1000;
+      max-width: 300px;
+      word-wrap: break-word;
+      white-space: normal;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #historyTable tr:last-child td {
+      border-bottom: none;
+    }
+
+    #historyTable tr:hover td {
+      background-color: #f8f9ff;
+    }
+
+    /* Status badge styling */
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .safe-badge {
+      background-color: rgba(46, 204, 113, 0.1);
+      color: #2ecc71;
+    }
+
+    .danger-badge {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: #e74c3c;
+    }
+
+    /* Score cell styling */
+    .score-cell {
+      text-align: center;
+    }
+
+    #loadingSpinner {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .spinner {
+      border: 4px solid rgba(72, 52, 212, 0.1);
+      border-top: 4px solid #4834d4;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #alternativesPopup {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .popup-content {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 24px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .close-btn {
+      color: #4834d4;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      transform: rotate(90deg);
+    }
+
+    .alternatives-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .alternatives-list li {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f6f7ff 0%, #f0f3ff 100%);
+      border-radius: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .alternatives-list li:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .alternatives-list a {
+      color: #4834d4;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+
+    .alternatives-list a:hover {
+      color: #686de0;
+    }
+
+    .alternative-reason {
+      color: #666;
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .alternatives-actions {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .danger-btn {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+
+    .danger-btn:hover {
+      background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .alternatives-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ AI URL Safety Guardian</h1>
+    <input type="text" id="urlInput" placeholder="Enter URL to analyze (e.g., https://example.com)">
+    <button onclick="checkURL()">Analyze URL</button>
+    
+    <div id="loadingSpinner">
+      <div class="spinner"></div>
+      <p>Analyzing URL...</p>
+    </div>
+    
+    <div id="result" class="result"></div>
+    
+    <div class="history-header">
+      <h2>URL Safety History</h2>
+      <button onclick="showClearHistoryModal()" class="clear-history-btn">Clear All History</button>
+    </div>
+    <div class="table-container">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Safety Status</th>
+            <th>AI Risk Score</th>
+            <th>Checked At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal" class="modal">
+    <div class="modal-content">
+      <h3>Confirm Delete</h3>
+      <p id="modalMessage">Are you sure you want to delete this entry?</p>
+      <div class="modal-buttons">
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        <button class="confirm-btn" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alternatives Popup -->
+  <div id="alternativesPopup">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h2>🌐 Alternative Websites</h2>
+        <span class="close-btn" onclick="closeAlternativesPopup()">&times;</span>
+      </div>
+      <div id="alternativesContent"></div>
+    </div>
+  </div>
+
+  <script>
+    GEMINI_API_KEY = 'AIzaSyCqRY-6vzHqourPW4ZPKnTktIW67YjM9-0';
+    VIRUSTOTAL_API_KEY = '59dd5a99e2b5e520229390bf05fc9a28cb9866bc31986604ea39b5a3e1661258';
+
+    class URLSafetyGuardian {
+      constructor() {
+        this.history = JSON.parse(localStorage.getItem('urlSafetyHistory') || '[]');
+        this.renderHistory();
+      }
+
+      async generateAlternativeWebsites(url, category) {
+        try {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `Generate a list of 5 safe, reputable alternative websites for a potentially dangerous URL. 
+
+Criteria:
+- Websites must be well-known and trusted
+- Provide a brief, compelling reason why each is a good alternative
+- Format each entry as: "Website Name: [URL] - Reason for recommendation"
+- Do not use asterisk '*' in the websites name.
+
+Context: The original URL was in the ${category} category and was flagged as potentially unsafe.
+
+Output example:
+Wikipedia: https://www.wikipedia.org - Comprehensive, reliable encyclopedia for research
+Google Scholar: https://scholar.google.com - Academic research and scholarly literature`
+                }]
+              }]
+            })
+          });
+
+          const data = await response.json();
+          return data.candidates[0].content.parts[0].text;
+        } catch (error) {
+          console.error('Alternative Websites Generation Error:', error);
+          return 'Unable to generate alternative website recommendations at this moment.';
+        }
+      }
+
+      addEntry(url, isSafe, maliciousPercentage) {
+        const newEntry = {
+          url,
+          isSafe,
+          maliciousPercentage,
+          timestamp: new Date().toLocaleString()
+        };
+
+        this.history.unshift(newEntry);
+        if (this.history.length > 10) {
+          this.history = this.history.slice(0, 10);
+        }
+
+        localStorage.setItem('urlSafetyHistory', JSON.stringify(this.history));
+        this.renderHistory();
+      }
+
+      deleteEntry(index) {
+        this.history.splice(index, 1);
+        localStorage.setItem('urlSafetyHistory', JSON.stringify(this.history));
+        this.renderHistory();
+      }
+
+      clearHistory() {
+        this.history = [];
+        localStorage.setItem('urlSafetyHistory', JSON.stringify(this.history));
+        this.renderHistory();
+      }
+
+      renderHistory() {
+        const historyBody = document.getElementById('historyBody');
+        historyBody.innerHTML = '';
+
+        this.history.forEach((entry, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="url-cell" data-url="${entry.url}">${entry.url}</td>
+            <td>
+              <span class="status-badge ${entry.isSafe ? 'safe-badge' : 'danger-badge'}">
+                ${entry.isSafe ? 'Safe' : 'Unsafe'}
+              </span>
+            </td>
+            <td class="score-cell">${entry.maliciousPercentage}%</td>
+            <td>${entry.timestamp}</td>
+            <td class="action-cell">
+              <button class="delete-entry" onclick="showDeleteModal(${index})">×</button>
+            </td>
+          `;
+          historyBody.appendChild(row);
+        });
+      }
+    }
+
+    let currentDeleteIndex = null;
+    let deleteMode = '';
+
+    function showDeleteModal(index) {
+      currentDeleteIndex = index;
+      deleteMode = 'single';
+      document.getElementById('modalMessage').textContent = 'Are you sure you want to delete this entry?';
+      document.getElementById('confirmationModal').style.display = 'block';
+      document.getElementById('confirmDelete').onclick = confirmDelete;
+    }
+
+    function showClearHistoryModal() {
+      deleteMode = 'all';
+      document.getElementById('modalMessage').textContent = 'Are you sure you want to clear all history? This action cannot be undone.';
+      document.getElementById('confirmationModal').style.display = 'block';
+      document.getElementById('confirmDelete').onclick = confirmDelete;
+    }
+
+    function closeModal() {
+      document.getElementById('confirmationModal').style.display = 'none';
+      currentDeleteIndex = null;
+      deleteMode = '';
+    }
+
+    function confirmDelete() {
+      if (deleteMode === 'single' && currentDeleteIndex !== null) {
+        urlSafetyGuardian.deleteEntry(currentDeleteIndex);
+      } else if (deleteMode === 'all') {
+        urlSafetyGuardian.clearHistory();
+      }
+      closeModal();
+    }
+
+    const urlSafetyGuardian = new URLSafetyGuardian();
+
+    function extractUrlCategory(url) {
+      const categorizations = {
+        'news': ['news', 'journalism', 'media'],
+        'research': ['scholar', 'academic', 'education', 'study'],
+        'shopping': ['shop', 'store', 'buy', 'ecommerce'],
+        'social': ['social', 'network', 'community'],
+        'general': ['default', 'website', 'page']
+      };
+
+      const lowerUrl = url.toLowerCase();
+      
+      for (const [category, keywords] of Object.entries(categorizations)) {
+        if (keywords.some(keyword => lowerUrl.includes(keyword))) {
+          return category;
+        }
+      }
+
+      return 'general';
+    }
+
+    async function checkURL() {
+      const urlInput = document.getElementById('urlInput').value.trim();
+      const resultDiv = document.getElementById('result');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      
+      resultDiv.innerHTML = '';
+      loadingSpinner.style.display = 'block';
+
+      if (!urlInput) {
+        resultDiv.innerHTML = 'Please enter a valid URL.';
+        loadingSpinner.style.display = 'none';
+        return;
+      }
+
+      try {
+        const submitResponse = await fetch('https://www.virustotal.com/api/v3/urls', {
+          method: 'POST',
+          headers: {
+            'x-apikey': VIRUSTOTAL_API_KEY,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `url=${encodeURIComponent(urlInput)}`
+        });
+
+        const submitData = await submitResponse.json();
+        const analysisId = submitData.data.id;
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        const analysisResponse = await fetch(`https://www.virustotal.com/api/v3/analyses/${analysisId}`, {
+          method: 'GET',
+          headers: {
+            'x-apikey': VIRUSTOTAL_API_KEY,
+            'accept': 'application/json'
+          }
+        });
+
+        const analysisData = await analysisResponse.json();
+        const stats = analysisData.data.attributes.stats;
+        const totalChecks = Object.values(stats).reduce((a, b) => a + b, 0);
+        const maliciousPercentage = ((stats.malicious / totalChecks) * 100).toFixed(2);
+        const isSafe = stats.malicious === 0;
+
+        resultDiv.innerHTML = `
+          <span class="ai-badge">🤖 AI Analysis</span>
+          <h3>URL Safety Results</h3>
+          <p>URL: ${urlInput}</p>
+          <p class="${isSafe ? 'safe' : 'danger'}">
+            ${isSafe ? 'Safe' : 'Potentially Dangerous'}
+          </p>
+          <p>Total Scans: ${totalChecks}</p>
+          <p>Malicious Percentage: ${maliciousPercentage}%</p>
+          ${!isSafe ? '<button onclick="showAlternativesPopup()">View Alternatives</button>' : ''}
+        `;
+
+        if (!isSafe) {
+          const category = extractUrlCategory(urlInput);
+          const alternativeWebsites = await urlSafetyGuardian.generateAlternativeWebsites(urlInput, category);
+          renderAlternativesPopup(alternativeWebsites);
+        }
+
+        urlSafetyGuardian.addEntry(urlInput, isSafe, maliciousPercentage);
+        loadingSpinner.style.display = 'none';
+
+      } catch (error) {
+        console.error('URL Analysis Error:', error);
+        resultDiv.innerHTML = `Error: ${error.message}. Check your connection and API keys.`;
+        loadingSpinner.style.display = 'none';
+      }
+    }
+
+    function renderAlternativesPopup(alternatives) {
+      const alternativesContent = document.getElementById('alternativesContent');
+      const lines = alternatives.split('\n');
+      const websiteList = lines
+        .filter(line => line.trim() !== '')
+        .map(line => {
+          const [nameAndUrl, reason] = line.split(' - ');
+          const [name, url] = nameAndUrl.split(': ');
+          return url ? `
+            <li>
+              <a href="${url}" target="_blank">${name}</a>
+              <p class="alternative-reason">${reason || 'A reliable alternative website'}</p>
+            </li>
+          ` : '';
+        })
+        .filter(Boolean);
+
+      alternativesContent.innerHTML = `
+        <ul class="alternatives-list">
+          ${websiteList.join('')}
+        </ul>
+        <div class="alternatives-actions">
+          <button onclick="copyAlternatives()">Copy Alternatives</button>
+          <button onclick="blockURL()" class="danger-btn">Block URL</button>
+        </div>
+      `;
+    }
+
+    function showAlternativesPopup() {
+      document.getElementById('alternativesPopup').style.display = 'block';
+    }
+
+    function closeAlternativesPopup() {
+      document.getElementById('alternativesPopup').style.display = 'none';
+    }
+
+    function copyAlternatives() {
+      const alternativesList = document.querySelector('.alternatives-list').innerText;
+      navigator.clipboard.writeText(alternativesList).then(() => {
+        alert('Alternative websites copied to clipboard!');
+      });
+    }
+
+    function blockURL() {
+      const urlInput = document.getElementById('urlInput').value;
+      alert(`Blocking dangerous URL: ${urlInput}`);
+      closeAlternativesPopup();
+    }
+  </script>
+</body>
+</html>

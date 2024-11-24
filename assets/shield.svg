@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Background shield -->
+  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" 
+        fill="#4834d4" opacity="0.2"/>
+  <!-- Shield outline -->
+  <path d="M12 3.18l7 3.12v4.7c0 4.67-3.13 8.96-7 10.12-3.87-1.16-7-5.45-7-10.12V6.3l7-3.12z" 
+        fill="#4834d4"/>
+  <!-- Lock symbol -->
+  <path d="M15 11.5a3 3 0 00-6 0v1h6v-1zm1 1v-1a4 4 0 00-8 0v1h-1v5h10v-5h-1z" 
+        fill="white"/>
+</svg>

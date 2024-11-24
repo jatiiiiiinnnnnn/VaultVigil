@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaultVigil</title>
+    <link rel="icon" type="image/svg+xml" href="assets/shield.svg">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .title {
+            color: white;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .tagline {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            min-height: 1.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.1) 45%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.1) 55%,
+                transparent 100%
+            );
+            transition: all 0.6s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .icon-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            stroke: white;
+            stroke-width: 1.5;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .card-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">VaultVigil</h1>
+        <div class="tagline"></div>
+    </div>
+    
+    <div class="cards-container">
+        <!-- Email Security Card -->
+        <a href="emails/mails.html" class="card">
+            <div class="icon-container">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+            </div>
+            <h2 class="card-title">Are you getting Phished?</h2>
+            <p class="card-subtitle">Verify your email security and protect against phishing attacks</p>
+        </a>
+
+        <!-- URL Security Card -->
+        <a href="URLS/Url.html" class="card">
+            <div class="icon-container">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+            </div>
+            <h2 class="card-title">Check That Damn URL</h2>
+            <p class="card-subtitle">Ensure website legitimacy before clicking through</p>
+        </a>
+    </div>
+
+    <script>
+        // Typewriter effect for tagline
+        const tagline = "Your Digital Guardian Against Online Threats";
+        const taglineElement = document.querySelector('.tagline');
+        let charIndex = 0;
+
+        function typeWriter() {
+            if (charIndex < tagline.length) {
+                taglineElement.textContent += tagline.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+
+        // Add smooth animation when cards come into view
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+            });
+
+            setTimeout(() => {
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 200);
+                });
+            }, 300);
+
+            // Start typewriter effect after a short delay
+            setTimeout(typeWriter, 500);
+        });
+    </script>
+</body>
+</html>
